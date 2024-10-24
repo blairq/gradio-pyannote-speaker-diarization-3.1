@@ -1,5 +1,4 @@
 import torch
-import spaces
 import gradio as gr
 import os
 from pyannote.audio import Pipeline
@@ -32,7 +31,6 @@ def save_audio(audio):
 
     return "temp.wav"
 
-@spaces.GPU(duration=60 * 2)
 def diarize_audio(temp_file, num_speakers, min_speakers, max_speakers):
     if pipeline is None:
         return "Error: Pipeline not initialized"
@@ -55,7 +53,7 @@ def diarize_audio(temp_file, num_speakers, min_speakers, max_speakers):
 
     # Return the diarization output
     return str(diarization)
-    
+
 def timestamp_to_seconds(timestamp):
     try:
         # Extracts hour, minute, and second from timestamp and converts to total seconds
@@ -106,7 +104,7 @@ with gr.Blocks() as demo:
     This model takes an audio file as input and outputs the diarization of the speakers in the audio.
 
     Please upload an audio file and adjust the parameters as needed.
-    
+
     The maximum length of the audio file that can be processed depends based on the hardware it's running on. If you are on the ZeroGPU HuggingFace Space, it's around **35-40 minutes**.
 
     If you find this space helpful, please ❤ it.
@@ -118,9 +116,9 @@ with gr.Blocks() as demo:
     """)
     audio_input = gr.Audio(type="filepath", label="Upload Audio File")
     num_speakers_input = gr.Number(label="Number of Speakers", info="Use it only if you know the number of speakers in advance, else leave it to 0 and use the parameters below", value=0)
-    
+
     gr.Markdown("Use the following parameters only if you don't know the number of speakers, you can set lower and/or upper bounds on the number of speakers, if instead you know it, leave the following parameters to 0 and use the one above")
-    
+
     min_speakers_input = gr.Number(label="Minimum Number of Speakers", value=0)
     max_speakers_input = gr.Number(label="Maximum Number of Speakers", value=0)
     process_button = gr.Button("Process")
@@ -132,4 +130,4 @@ with gr.Blocks() as demo:
         inputs=[audio_input, num_speakers_input, min_speakers_input, max_speakers_input],
         outputs=[diarization_output, label_file_link]
 )
-demo.launch(share = False)
+demo.launch(share = True)
